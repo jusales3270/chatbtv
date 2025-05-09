@@ -107,9 +107,7 @@ for source in log_sources:
 log.setLevel(SRC_LOG_LEVELS["CONFIG"])
 
 
-WEBUI_NAME = os.environ.get("WEBUI_NAME", "ChatBTV")
-if WEBUI_NAME != "ChatBTV":
-    WEBUI_NAME += " (ChatBTV)"
+WEBUI_NAME = "ChatBTV"
 
 WEBUI_FAVICON_URL = "https://drive.google.com/drive/my-drive?hl=pt-br"
 

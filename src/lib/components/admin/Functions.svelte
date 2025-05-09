@@ -65,7 +65,7 @@
 			return null;
 		});
 
-		toast.success($i18n.t('Redirecting you to Open WebUI Community'));
+		toast.success($i18n.t('Redirecting you to ChatBTV Community'));
 
 		const url = 'https://openwebui.com';
 
@@ -423,7 +423,7 @@
 				>
 					<path
 						fill-rule="evenodd"
-						d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 9.5a.75.75 0 0 1-.75-.75V8.06l-.72.72a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0l2 2a.75.75 0 1 1-1.06 1.06l-.72-.72v2.69a.75.75 0 0 1-.75.75Z"
+						d="M4 2a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V6.621a1.5 1.5 0 0 0-.44-1.06L9.94 2.439A1.5 1.5 0 0 0 8.878 2H4Zm4 9.5a.75.75 0 0 1-.75-.75V8.06l-.72.72a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1-1.06 1.06l-.72-.72v2.69a.75.75 0 0 1-.75.75Z"
 						clip-rule="evenodd"
 					/>
 				</svg>
@@ -469,7 +469,7 @@
 {#if $config?.features.enable_community_sharing}
 	<div class=" my-16">
 		<div class=" text-xl font-medium mb-1 line-clamp-1">
-			{$i18n.t('Made by Open WebUI Community')}
+			{$i18n.t('Made by ChatBTV Community')}
 		</div>
 
 		<a
