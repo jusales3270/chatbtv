@@ -27,17 +27,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY ./backend/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
 
-# Copia o código do backend
+# Copia todo o código do backend (incluindo gunicorn_config.py)
 COPY ./backend /app
-
-# Copia o arquivo de configuração do Gunicorn que está na raiz
-COPY gunicorn_config.py /app/
 
 # Copia os arquivos construídos do frontend para a pasta 'static' do backend
 COPY --from=frontend /app/build /app/static
 
 # Define a porta que a aplicação vai usar
 EXPOSE 8080
+
+# Comando para iniciar o servidor Python (Gunicorn)
+CMD ["gunicorn", "-c", "gunicorn_config.py", "main:app"]
 
 # Comando para iniciar a aplicação quando o container rodar (VERSÃO FINAL)
 CMD ["gunicorn", "-c", "gunicorn_config.py", "main:app"]
