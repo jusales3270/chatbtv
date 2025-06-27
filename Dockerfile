@@ -8,10 +8,16 @@ COPY scripts ./scripts
 
 RUN npm install --legacy-peer-deps
 
-# Executa pyodide com fallback (não é obrigatório pro build continuar)
+# Executa pyodide para preparar os pacotes
 RUN node scripts/prepare-pyodide.js
 
 COPY . .
 
-# REMOVE o redirecionamento de log para mostrar erro diretamente
+# Constrói a aplicação SvelteKit para produção
 RUN npm run build
+
+# Expõe a porta que a aplicação vai usar
+EXPOSE 3000
+
+# Comando para iniciar a aplicação quando o container rodar
+CMD ["node", "build/index.js"]
