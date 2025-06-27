@@ -1,22 +1,37 @@
-# Estágio Único: Construir e Rodar a Aplicação Node.js (SvelteKit)
-FROM node:18-alpine
+# --- Estágio 1: Construir o Frontend SvelteKit ---
+FROM node:18-alpine AS frontend
 
 WORKDIR /app
 
-# Copia os arquivos de dependência
 COPY package*.json ./
-
-# Instala as dependências
 RUN npm install --legacy-peer-deps
 
-# Copia todo o resto do código fonte
 COPY . .
 
-# Constrói a aplicação SvelteKit para produção com mais memória
+# Constrói o frontend com mais memória
 RUN node --max-old-space-size=4096 node_modules/vite/bin/vite.js build
 
-# Expõe a porta padrão do adapter-node
-EXPOSE 3000
 
-# Comando para iniciar o servidor Node.js que foi gerado pelo build
-CMD ["node", "build/index.js"]
+# --- Estágio 2: Imagem Final de Produção ---
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Instala dependências do sistema
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+
+# Copia e instala as dependências Python, incluindo Gunicorn
+COPY ./backend/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
+
+# Copia todo o código do backend
+COPY ./backend /app
+
+# Copia os arquivos construídos do frontend para a pasta 'static' do backend
+COPY --from=frontend /app/build /app/static
+
+# Define a porta que a aplicação vai usar
+EXPOSE 8080
+
+# Comando para iniciar o servidor Gunicorn
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]
