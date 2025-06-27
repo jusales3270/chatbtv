@@ -3,9 +3,9 @@ FROM node:18-alpine AS frontend
 
 WORKDIR /app
 
+# Copia tudo necessário para o build do frontend
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-
 COPY . .
 
 # Constrói o frontend com mais memória
@@ -18,23 +18,20 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Instala dependências do sistema
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 
-# Copia e instala as dependências Python, incluindo Gunicorn
-COPY ./backend/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
+# Copia e instala as dependências Python (da raiz do projeto)
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade gunicorn -r requirements.txt
 
-# Copia todo o código do backend
-COPY ./backend /app
+# Copia os arquivos Python da raiz do projeto
+COPY *.py .
 
-# Copia os arquivos construídos do frontend para a pasta 'static' do backend
-COPY --from=frontend /app/build /app/static
+# Copia os arquivos construídos do frontend para a pasta 'static'
+COPY --from=frontend /app/build ./static
 
 # Define a porta que a aplicação vai usar
 EXPOSE 8080
 
-# Comando para iniciar o servidor Gunicorn com configuração via linha de comando
+# Comando para iniciar o servidor Gunicorn
 CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]
