@@ -1,6 +1,6 @@
 [project]
-name = "open-webui"
-description = "Open WebUI"
+name = "chat-btv"
+description = "ChatBTV"
 authors = [
     { name = "Timothy Jaeryang Baek", email = "tim@openwebui.com" }
 ]
@@ -125,7 +125,7 @@ classifiers = [
 ]
 
 [project.scripts]
-open-webui = "open_webui:app"
+chat-btv = "chat-btv:app"
 
 [build-system]
 requires = ["hatchling"]
