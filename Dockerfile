@@ -37,4 +37,4 @@ COPY --from=frontend /app/build /app/static
 EXPOSE 8080
 
 # Comando para iniciar o servidor Python (Gunicorn)
-CMD ["gunicorn", "-c", "gunicorn_config.py", "main:app"]
+CMD ["sleep", "infinity"]
