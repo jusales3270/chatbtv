@@ -23,9 +23,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia e instala as dependências Python DIRETAMENTE na imagem final
+# Copia e instala as dependências Python, INCLUINDO GUNICORN
 COPY ./backend/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
 
 # Copia o código do backend
 COPY ./backend /app
