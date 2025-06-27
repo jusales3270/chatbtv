@@ -27,7 +27,7 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-# Constrói o frontend com mais memória (nossa correção!)
+# Constrói o frontend com mais memória
 RUN node --max-old-space-size=4096 node_modules/vite/bin/vite.js build
 
 
@@ -35,6 +35,9 @@ RUN node --max-old-space-size=4096 node_modules/vite/bin/vite.js build
 FROM python:3.11-slim
 
 WORKDIR /app
+
+# Copia os executáveis (como gunicorn) do estágio 'backend' <-- LINHA CRÍTICA ADICIONADA
+COPY --from=backend /usr/local/bin/ /usr/local/bin/
 
 # Copia as dependências Python do estágio 'backend'
 COPY --from=backend /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
@@ -49,4 +52,5 @@ COPY --from=frontend /app/build /app/static
 EXPOSE 8080
 
 # Comando para iniciar o servidor Python (Gunicorn)
+CMD ["gunicorn", "-c", "gunicorn_config.py", "main:app"]r Python (Gunicorn)
 CMD ["gunicorn", "-c", "gunicorn_config.py", "main:app"]
