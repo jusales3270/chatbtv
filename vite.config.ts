@@ -1,21 +1,6 @@
-import { sveltekit } from '@sveltejs/kit/vite';
+import { sveltekit } from '@sveltejs/kit/vite'; 
 import { defineConfig } from 'vite';
-
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-
-// /** @type {import('vite').Plugin} */
-// const viteServerConfig = {
-// 	name: 'log-request-middleware',
-// 	configureServer(server) {
-// 		server.middlewares.use((req, res, next) => {
-// 			res.setHeader('Access-Control-Allow-Origin', '*');
-// 			res.setHeader('Access-Control-Allow-Methods', 'GET');
-// 			res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-// 			res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-// 			next();
-// 		});
-// 	}
-// };
 
 export default defineConfig({
 	plugins: [
@@ -24,7 +9,6 @@ export default defineConfig({
 			targets: [
 				{
 					src: 'node_modules/onnxruntime-web/dist/*.jsep.*',
-
 					dest: 'wasm'
 				}
 			]
@@ -35,7 +19,10 @@ export default defineConfig({
 		APP_BUILD_HASH: JSON.stringify(process.env.APP_BUILD_HASH || 'dev-build')
 	},
 	build: {
-		sourcemap: true
+		sourcemap: true,
+		rollupOptions: {
+			external: []
+		}
 	},
 	worker: {
 		format: 'es'
