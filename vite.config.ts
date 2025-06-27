@@ -1,4 +1,4 @@
-import { sveltekit } from '@sveltejs/kit/vite'; 
+import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
@@ -9,6 +9,10 @@ export default defineConfig({
 			targets: [
 				{
 					src: 'node_modules/onnxruntime-web/dist/*.jsep.*',
+					dest: 'wasm'
+				},
+				{
+					src: 'node_modules/onnxruntime-web/dist/*.wasm',
 					dest: 'wasm'
 				}
 			]
@@ -21,10 +25,21 @@ export default defineConfig({
 	build: {
 		sourcemap: true,
 		rollupOptions: {
-			external: []
+			external: [],
+			output: {
+				manualChunks: {
+					'onnxruntime-web': ['onnxruntime-web']
+				}
+			}
 		}
 	},
 	worker: {
 		format: 'es'
+	},
+	optimizeDeps: {
+		exclude: ['onnxruntime-web']
+	},
+	ssr: {
+		noExternal: ['onnxruntime-web']
 	}
 });
