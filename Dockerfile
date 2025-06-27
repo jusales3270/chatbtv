@@ -9,7 +9,7 @@ COPY scripts ./scripts
 RUN npm install --legacy-peer-deps
 
 # Executa pyodide com fallback (não é obrigatório pro build continuar)
-RUN node scripts/prepare-pyodide.js || echo "Aviso: prepare-pyodide.js falhou, prosseguindo..."
+RUN node scripts/prepare-pyodide.js
 
 COPY . .
 
