@@ -17,7 +17,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Não precisamos mais instalar o Git aqui, a aplicação não precisa mais dele.
+# ==================================================================
+#                       *** INÍCIO DA CORREÇÃO ***
+# Instala o executável do 'git'. A biblioteca GitPython precisa que ele
+# esteja presente no sistema para ser importada, mesmo que não seja
+# usada ativamente para ler o repositório.
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+#                        *** FIM DA CORREÇÃO ***
+# ==================================================================
 
 # Copia e instala as dependências Python
 COPY ./backend/requirements.txt /app/requirements.txt
@@ -32,5 +39,7 @@ COPY --from=frontend /app/build /app/static
 # Define a porta que a aplicação vai usar
 EXPOSE 8080
 
+# Comando para iniciar o servidor Gunicorn
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]
 # Comando para iniciar o servidor Gunicorn
 CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]:app"]
