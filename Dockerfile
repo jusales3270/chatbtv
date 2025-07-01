@@ -4,7 +4,6 @@ FROM node:18-alpine AS frontend
 WORKDIR /app
 
 # Copia apenas o package.json para instalar as dependências
-# Isso otimiza o cache do Docker
 COPY package.json ./
 
 # Instala as dependências
@@ -31,8 +30,14 @@ COPY ./backend/requirements.txt /app/requirements.txt
 # Instala as dependências do Python
 RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
 
-# Copia o código do backend
+# ==================================================================
+#                       *** INÍCIO DA CORREÇÃO ***
+# Copia APENAS o conteúdo da pasta 'backend' para o diretório de trabalho.
+# Isso garante que nenhum arquivo da raiz (como um main.py perdido)
+# interfira com a aplicação.
 COPY ./backend /app
+#                        *** FIM DA CORREÇÃO ***
+# ==================================================================
 
 # Copia os arquivos construídos do frontend para a pasta 'static' do backend
 COPY --from=frontend /app/build /app/static
@@ -41,4 +46,5 @@ COPY --from=frontend /app/build /app/static
 EXPOSE 8080
 
 # Comando para iniciar o servidor Gunicorn
+# O Gunicorn vai procurar por 'main:app' dentro do WORKDIR, que agora é o conteúdo do backend.
 CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]
