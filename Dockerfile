@@ -3,16 +3,9 @@ FROM node:18-alpine AS frontend
 
 WORKDIR /app
 
-# Copia apenas o package.json para instalar as dependências
 COPY package.json ./
-
-# Instala as dependências
 RUN npm install --legacy-peer-deps
-
-# Copia todo o resto do código
 COPY . .
-
-# Executa o build do frontend
 RUN npm run build
 
 
@@ -30,21 +23,21 @@ COPY ./backend/requirements.txt /app/requirements.txt
 # Instala as dependências do Python
 RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
 
-# ==================================================================
-#                       *** INÍCIO DA CORREÇÃO ***
-# Copia APENAS o conteúdo da pasta 'backend' para o diretório de trabalho.
-# Isso garante que nenhum arquivo da raiz (como um main.py perdido)
-# interfira com a aplicação.
+# Copia o código do backend
 COPY ./backend /app
-#                        *** FIM DA CORREÇÃO ***
-# ==================================================================
 
 # Copia os arquivos construídos do frontend para a pasta 'static' do backend
-COPY --from=frontend /app/build /app/static
+COPY --from=frontend /app/build /app/open_webui/static
 
 # Define a porta que a aplicação vai usar
 EXPOSE 8080
 
-# Comando para iniciar o servidor Gunicorn
-# O Gunicorn vai procurar por 'main:app' dentro do WORKDIR, que agora é o conteúdo do backend.
-CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]
+# ==================================================================
+#                       *** INÍCIO DA CORREÇÃO ***
+# Comando para iniciar o servidor Gunicorn.
+# --chdir /app: Garante que o Gunicorn rode a partir do diretório /app.
+# open_webui.main:app: Diz ao Gunicorn para procurar o arquivo 'main.py'
+#                    dentro do pacote 'open_webui' e usar o objeto 'app'.
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "--chdir", "/app", "open_webui.main:app"]
+#                        *** FIM DA CORREÇÃO ***
+# ==================================================================
