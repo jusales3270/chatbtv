@@ -17,8 +17,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Não precisamos mais instalar o Git aqui
-# RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+# Não precisamos mais instalar o Git aqui, a aplicação não precisa mais dele.
 
 # Copia e instala as dependências Python
 COPY ./backend/requirements.txt /app/requirements.txt
@@ -34,4 +33,4 @@ COPY --from=frontend /app/build /app/static
 EXPOSE 8080
 
 # Comando para iniciar o servidor Gunicorn
-CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]
+CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8080", "main:app"]:app"]
