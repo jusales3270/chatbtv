@@ -3,9 +3,9 @@ FROM node:18-alpine AS frontend
 
 WORKDIR /app
 
-# Copia apenas os arquivos necessários para instalar as dependências
+# Copia apenas o package.json para instalar as dependências
+# Isso otimiza o cache do Docker
 COPY package.json ./
-COPY package-lock.json ./
 
 # Instala as dependências
 RUN npm install --legacy-peer-deps
@@ -14,7 +14,6 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Executa o build do frontend
-# O projeto Open WebUI espera que o resultado esteja em './build'
 RUN npm run build
 
 
@@ -36,7 +35,6 @@ RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
 COPY ./backend /app
 
 # Copia os arquivos construídos do frontend para a pasta 'static' do backend
-# O build do npm deve criar a pasta 'build' corretamente
 COPY --from=frontend /app/build /app/static
 
 # Define a porta que a aplicação vai usar
