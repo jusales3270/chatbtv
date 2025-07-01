@@ -27,6 +27,15 @@ RUN pip install --no-cache-dir --upgrade gunicorn -r /app/requirements.txt
 # Copia todo o código do backend
 COPY ./backend /app
 
+# ==================================================================
+#                       *** INÍCIO DA CORREÇÃO ***
+# Copia a pasta .git da raiz do projeto para o diretório de trabalho /app
+# Isso resolve o erro "InvalidGitRepositoryError" pois a aplicação
+# agora encontrará um repositório Git válido para usar com a GitPython.
+COPY .git /app/.git
+#                        *** FIM DA CORREÇÃO ***
+# ==================================================================
+
 # Copia os arquivos construídos do frontend para a pasta 'static' do backend
 COPY --from=frontend /app/build /app/static
 
