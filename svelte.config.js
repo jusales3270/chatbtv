@@ -8,20 +8,12 @@ const config = {
 
     kit: {
         adapter: adapter({
-            // REGRA 1: Exclui os arquivos .wasm do pacote final da Vercel.
+            // Exclui os arquivos .wasm do pacote final da Vercel.
             exclude: [
                 '**/node_modules/@huggingface/transformers/dist/*.wasm',
                 '**/node_modules/onnxruntime-web/dist/*.wasm'
             ]
         })
-    },
-
-    // REGRA 2: Fica aqui, no nível principal.
-    // Diz ao Vite para não incluir essas bibliotecas no build do servidor.
-    vite: {
-        ssr: {
-            external: ['@huggingface/transformers', 'onnxruntime-web', 'kokoro-js']
-        }
     }
 };
 
