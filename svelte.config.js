@@ -8,7 +8,7 @@ const config = {
 
     kit: {
         adapter: adapter({
-            // REGRA 1: Exclui à força os arquivos .wasm do pacote final da Vercel.
+            // REGRA 1: Exclui os arquivos .wasm do pacote final da Vercel.
             exclude: [
                 '**/node_modules/@huggingface/transformers/dist/*.wasm',
                 '**/node_modules/onnxruntime-web/dist/*.wasm'
