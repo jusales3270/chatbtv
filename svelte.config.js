@@ -1,3 +1,4 @@
+// svelte.config.js
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import adapter from '@sveltejs/adapter-vercel';
 
@@ -6,23 +7,20 @@ const config = {
     preprocess: vitePreprocess(),
 
     kit: {
-        // MODIFICAÇÃO AQUI
         adapter: adapter({
-            // Esta configuração força a exclusão de arquivos do pacote final da função.
-            // É a nossa ferramenta mais poderosa contra o erro de tamanho.
+            // Força a exclusão dos arquivos .wasm do pacote da função serverless
             exclude: [
                 '**/node_modules/@huggingface/transformers/dist/*.wasm',
                 '**/node_modules/onnxruntime-web/dist/*.wasm'
             ]
-        })
-    },
-
-    vite: {
-        ssr: {
-            // A linha noExternal provavelmente não é necessária, vamos simplificar.
-            // Se ocorrer um erro sobre '@internationalized/date', podemos adicioná-la de volta.
-            external: ['@huggingface/transformers', 'onnxruntime-web', 'kokoro-js']
-        }
+        }),
+		
+		// Adicionamos a configuração do Vite aqui, que é o lugar correto
+		vite: {
+			ssr: {
+				external: ['@huggingface/transformers', 'onnxruntime-web', 'kokoro-js']
+			}
+		}
     }
 };
 
