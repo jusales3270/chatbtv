@@ -1,8 +1,16 @@
-import { env } from '@huggingface/transformers';
+// src/lib/workers/kokoro.worker.ts
+
 import { KokoroTTS } from 'kokoro-js';
 
-// TODO: Below doesn't work as expected, need to investigate further
-env.backends.onnx.wasm.wasmPaths = '/wasm/';
+// Usamos uma função auto-executável para poder usar 'await' no nível superior
+(async () => {
+    // Carregamos a biblioteca dinamicamente, somente quando o worker iniciar
+    const { env } = await import('@huggingface/transformers');
+
+    // Agora configuramos o 'env' que foi carregado dinamicamente
+    env.backends.onnx.wasm.wasmPaths = '/wasm/';
+})();
+
 
 let tts;
 let isInitialized = false; // Flag to track initialization status
