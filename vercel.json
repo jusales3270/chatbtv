@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "**/*.js": {
-      "excludeFiles": "**/node_modules/@huggingface/transformers/dist/*.wasm"
-    }
-  }
-}
