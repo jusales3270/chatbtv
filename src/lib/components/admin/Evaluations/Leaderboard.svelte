@@ -10,13 +10,8 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import MagnifyingGlass from '$lib/components/icons/MagnifyingGlass.svelte';
 
-<<<<<<< HEAD
-	// Variáveis para carregar dinamicamente a biblioteca
-	let AutoModel, AutoTokenizer, env;
-=======
 	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
 	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
->>>>>>> 59ba21bdf8eb791a412db869a13ff76c6135b651
 
 	const i18n = getContext('i18n');
 
