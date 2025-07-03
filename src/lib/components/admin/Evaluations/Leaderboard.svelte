@@ -1,15 +1,15 @@
 <script lang="ts">
 	import * as ort from 'onnxruntime-web';
-	import { env, AutoModel, AutoTokenizer } from '@huggingface/transformers';
-
-	env.backends.onnx.wasm.wasmPaths = '/wasm/';
-
 	import { onMount, getContext } from 'svelte';
+	import { browser } from '$app/environment';
 	import { models } from '$lib/stores';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import MagnifyingGlass from '$lib/components/icons/MagnifyingGlass.svelte';
+
+	// Variáveis para carregar dinamicamente a biblioteca
+	let AutoModel, AutoTokenizer, env;
 
 	const i18n = getContext('i18n');
 
@@ -198,22 +198,37 @@
 	//////////////////////
 
 	const loadEmbeddingModel = async () => {
-		// Check if the tokenizer and model are already loaded and stored in the window object
-		if (!window.tokenizer) {
-			window.tokenizer = await AutoTokenizer.from_pretrained(EMBEDDING_MODEL);
+		// Se a biblioteca já foi carregada, não faz nada.
+		if (AutoModel) return;
+
+		// Garante que o código só rode no navegador
+		if (browser) {
+			// Carrega a biblioteca dinamicamente
+			const transformers = await import('@huggingface/transformers');
+
+			// Atribui as partes que precisamos às nossas variáveis
+			AutoModel = transformers.AutoModel;
+			AutoTokenizer = transformers.AutoTokenizer;
+			env = transformers.env;
+
+			// Configura o caminho do WASM
+			env.backends.onnx.wasm.wasmPaths = '/wasm/';
+
+			// O resto da sua lógica original continua aqui
+			if (!window.tokenizer) {
+				window.tokenizer = await AutoTokenizer.from_pretrained(EMBEDDING_MODEL);
+			}
+
+			if (!window.model) {
+				window.model = await AutoModel.from_pretrained(EMBEDDING_MODEL);
+			}
+
+			tokenizer = window.tokenizer;
+			model = window.model;
+
+			const allTags = new Set(feedbacks.flatMap((feedback) => feedback.data.tags || []));
+			await getTagEmbeddings(Array.from(allTags));
 		}
-
-		if (!window.model) {
-			window.model = await AutoModel.from_pretrained(EMBEDDING_MODEL);
-		}
-
-		// Use the tokenizer and model from the window object
-		tokenizer = window.tokenizer;
-		model = window.model;
-
-		// Pre-compute embeddings for all unique tags
-		const allTags = new Set(feedbacks.flatMap((feedback) => feedback.data.tags || []));
-		await getTagEmbeddings(Array.from(allTags));
 	};
 
 	const getEmbeddings = async (text: string) => {
