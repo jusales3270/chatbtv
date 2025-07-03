@@ -1,45 +1,58 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
+// src/lib/workers/kokoro.worker.ts
+import { KokoroTTS } from 'kokoro-js';
 
-export default defineConfig({
-	plugins: [
-		sveltekit(),
-		viteStaticCopy({
-			targets: [
-				{
-					src: 'node_modules/onnxruntime-web/dist/*.jsep.*',
-					dest: 'wasm'
-				},
-				{
-					src: 'node_modules/onnxruntime-web/dist/*.wasm',
-					dest: 'wasm'
-				}
-			]
-		})
-	],
-	define: {
-		APP_VERSION: JSON.stringify(process.env.npm_package_version),
-		APP_BUILD_HASH: JSON.stringify(process.env.APP_BUILD_HASH || 'dev-build')
-	},
-	build: {
-		sourcemap: true,
-		rollupOptions: {
-			external: [],
-			output: {
-				manualChunks: {
-					'onnxruntime-web': ['onnxruntime-web']
-				}
-			}
-		}
-	},
-	worker: {
-		format: 'es'
-	},
-	optimizeDeps: {
-		exclude: ['onnxruntime-web']
-	},
-	ssr: {
-		noExternal: ['onnxruntime-web']
-	}
-});
+// Função auto-executável para carregar e configurar o ambiente dinamicamente
+(async () => {
+    const { env } = await import('@huggingface/transformers');
+    env.backends.onnx.wasm.wasmPaths = '/wasm/';
+})();
+
+let tts;
+let isInitialized = false;
+const DEFAULT_MODEL_ID = 'onnx-community/Kokoro-82M-v1.0-ONNX';
+
+self.onmessage = async (event) => {
+    const { type, payload } = event.data;
+
+    if (type === 'init') {
+        let { model_id, dtype } = payload;
+        model_id = model_id || DEFAULT_MODEL_ID;
+
+        self.postMessage({ status: 'init:start' });
+
+        try {
+            tts = await KokoroTTS.from_pretrained(model_id, {
+                dtype,
+                device: !!navigator?.gpu ? 'webgpu' : 'wasm'
+            });
+            isInitialized = true;
+            self.postMessage({ status: 'init:complete' });
+        } catch (error) {
+            isInitialized = false;
+            self.postMessage({ status: 'init:error', error: error.message });
+        }
+    }
+
+    if (type === 'generate') {
+        if (!isInitialized || !tts) {
+            self.postMessage({ status: 'generate:error', error: 'TTS model not initialized' });
+            return;
+        }
+
+        const { text, voice } = payload;
+        self.postMessage({ status: 'generate:start' });
+
+        try {
+            const rawAudio = await tts.generate(text, { voice });
+            const blob = await rawAudio.toBlob();
+            const blobUrl = URL.createObjectURL(blob);
+			self.postMessage({ status: 'generate:complete', audioUrl: blobUrl });
+        } catch (error) {
+            self.postMessage({ status: 'generate:error', error: error.message });
+        }
+    }
+
+    if (type === 'status') {
+        self.postMessage({ status: 'status:check', initialized: isInitialized });
+    }
+};

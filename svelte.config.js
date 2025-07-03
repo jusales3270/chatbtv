@@ -9,7 +9,7 @@ const config = {
         adapter: adapter()
     },
 
-    // ADICIONE ESTA SEÇÃO INTEIRA
+   
     vite: {
         ssr: {
             noExternal: ['@internationalized/date'], // Adicione esta linha se precisar
