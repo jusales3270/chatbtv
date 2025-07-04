@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { io } from 'socket.io-client';
 	import { spring } from 'svelte/motion';
 	import PyodideWorker from '$lib/workers/pyodide.worker?worker';
@@ -420,11 +420,7 @@
 			if (type === 'message') {
 				if ($isLastActiveTab) {
 					if ($settings?.notificationEnabled ?? false) {
-<<<<<<< HEAD
-						new Notification(`${data?.user?.name} (#${event?.channel?.name}) | ChatBTV`, {
-=======
-						new Notification(`${data?.user?.name} (#${event?.channel?.name}) • Open WebUI`, {
->>>>>>> 59ba21bdf8eb791a412db869a13ff76c6135b651
+						new Notification(`${data?.user?.name} (#${event?.channel?.name}) | ${$WEBUI_NAME}`, {
 							body: data?.content,
 							icon: data?.user?.profile_image_url ?? `${WEBUI_BASE_URL}/static/favicon.png`
 						});
@@ -561,15 +557,9 @@
 			const browserLanguages = navigator.languages
 				? navigator.languages
 				: [navigator.language || navigator.userLanguage];
-			const lang = backendConfig.default_locale
-				? backendConfig.default_locale
-<<<<<<< HEAD
-				: bestMatchingLanguage(languages, browserLanguages, 'pt-BR');
-			$i18n.changeLanguage(lang);
-=======
-				: bestMatchingLanguage(languages, browserLanguages, 'en-US');
-			changeLanguage(lang);
->>>>>>> 59ba21bdf8eb791a412db869a13ff76c6135b651
+			const lang =
+				backendConfig.default_locale ?? bestMatchingLanguage(languages, browserLanguages, 'pt-BR');
+			await changeLanguage(lang);
 		}
 
 		if (backendConfig) {

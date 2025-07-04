@@ -22,7 +22,7 @@
 	let top: boolean = false;
 
 	let channel: any = null;
-	let messages: any[] | null = null;
+	let messages: any[] = [];
 
 	let threadId: string | null = null;
 
