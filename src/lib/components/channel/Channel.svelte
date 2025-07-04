@@ -16,19 +16,18 @@
 	import Thread from './Thread.svelte';
 
 	export let id = '';
-
 	let scrollEnd = true;
-	let messagesContainerElement = null;
+	let messagesContainerElement: HTMLDivElement | null = null;
 
-	let top = false;
+	let top: boolean = false;
 
-	let channel = null;
-	let messages = null;
+	let channel: any = null;
+	let messages: any[] | null = null;
 
-	let threadId = null;
+	let threadId: string | null = null;
 
-	let typingUsers = [];
-	let typingUsersTimeout = {};
+	let typingUsers: any[] = [];
+	let typingUsersTimeout: { [key: string]: any } = {};
 
 	$: if (id) {
 		initHandler();
@@ -68,7 +67,7 @@
 		}
 	};
 
-	const channelEventHandler = async (event) => {
+	const channelEventHandler = async (event: any) => {
 		if (event.channel_id === id) {
 			const type = event?.data?.type ?? null;
 			const data = event?.data?.data ?? null;
@@ -135,7 +134,7 @@
 		}
 	};
 
-	const submitHandler = async ({ content, data }) => {
+	const submitHandler = async ({ content, data }: { content: string; data: any }) => {
 		if (!content && (data?.files ?? []).length === 0) {
 			return;
 		}
@@ -177,7 +176,7 @@
 
 		mediaQuery = window.matchMedia('(min-width: 1024px)');
 
-		const handleMediaQuery = async (e) => {
+		const handleMediaQuery = async (e: MediaQueryListEvent) => {
 			if (e.matches) {
 				largeScreen = true;
 			} else {
@@ -195,11 +194,7 @@
 </script>
 
 <svelte:head>
-<<<<<<< HEAD
-	<title>#{channel?.name ?? 'Channel'} | ChatBTV</title>
-=======
 	<title>#{channel?.name ?? 'Channel'} • Open WebUI</title>
->>>>>>> 59ba21bdf8eb791a412db869a13ff76c6135b651
 </svelte:head>
 
 <div
@@ -227,7 +222,7 @@
 								{channel}
 								{messages}
 								{top}
-								onThread={(id) => {
+								onThread={(id: string) => {
 									threadId = id;
 								}}
 								onLoad={async () => {

@@ -147,6 +147,8 @@ type Settings = {
 	splitLargeDeltas?: boolean;
 	chatDirection: 'LTR' | 'RTL' | 'auto';
 	ctrlEnterToSend?: boolean;
+	widescreenMode?: boolean;
+	directConnections?: any;
 
 	system?: string;
 	seed?: number;
@@ -216,6 +218,8 @@ type Config = {
 		enable_community_sharing: boolean;
 		enable_autocomplete_generation: boolean;
 		enable_direct_connections: boolean;
+		enable_notes?: boolean;
+		enable_ldap?: boolean;
 	};
 	oauth: {
 		providers: {
@@ -226,6 +230,7 @@ type Config = {
 		pending_user_overlay_title?: string;
 		pending_user_overlay_description?: string;
 	};
+	onboarding?: boolean;
 };
 
 type PromptSuggestion = {
@@ -239,4 +244,5 @@ type SessionUser = {
 	name: string;
 	role: string;
 	profile_image_url: string;
+	permissions?: any;
 };

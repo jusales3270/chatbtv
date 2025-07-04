@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { onMount, getContext } from 'svelte';
 	import { goto } from '$app/navigation';
+	import type { I18n } from 'i18next';
+	import type { Writable } from 'svelte/store';
 
 	import { config, functions, models, settings } from '$lib/stores';
 	import { createNewFunction, getFunctions } from '$lib/apis/functions';
@@ -10,21 +12,21 @@
 	import { compareVersion, extractFrontmatter } from '$lib/utils';
 	import { WEBUI_VERSION } from '$lib/constants';
 
-	const i18n = getContext('i18n');
+	const i18n = getContext<Writable<I18n>>('i18n');
 
 	let mounted = false;
 	let clone = false;
-	let func = null;
+	let func: any = null;
 
-	const saveHandler = async (data) => {
+	const saveHandler = async (data: any) => {
 		console.log(data);
 
-		const manifest = extractFrontmatter(data.content);
+		const manifest: any = extractFrontmatter(data.content);
 		if (compareVersion(manifest?.required_open_webui_version ?? '0.0.0', WEBUI_VERSION)) {
 			console.log('Version is lower than required');
 			toast.error(
 				$i18n.t(
-						'ChatBTV version (v{{OPEN_WEBUI_VERSION}}) is lower than required version (v{{REQUIRED_VERSION}})',
+					'ChatBTV version (v{{OPEN_WEBUI_VERSION}}) is lower than required version (v{{REQUIRED_VERSION}})',
 					{
 						OPEN_WEBUI_VERSION: WEBUI_VERSION,
 						REQUIRED_VERSION: manifest?.required_open_webui_version ?? '0.0.0'
@@ -59,7 +61,7 @@
 	};
 
 	onMount(() => {
-		window.addEventListener('message', async (event) => {
+		window.addEventListener('message', async (event: MessageEvent) => {
 			if (
 				!['https://openwebui.com', 'https://www.openwebui.com', 'http://localhost:9999'].includes(
 					event.origin
@@ -95,7 +97,7 @@
 			meta={func?.meta ?? { description: '' }}
 			content={func?.content ?? ''}
 			{clone}
-			onSave={(value) => {
+			onSave={(value: any) => {
 				saveHandler(value);
 			}}
 		/>
