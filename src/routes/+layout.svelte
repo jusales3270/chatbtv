@@ -271,11 +271,7 @@
 
 					if ($isLastActiveTab) {
 						if ($settings?.notificationEnabled ?? false) {
-<<<<<<< HEAD
 							new Notification(`${title} | ChatBTV`, {
-=======
-							new Notification(`${title} • Open WebUI`, {
->>>>>>> 59ba21bdf8eb791a412db869a13ff76c6135b651
 								body: content,
 								icon: `${WEBUI_BASE_URL}/static/favicon.png`
 							});
